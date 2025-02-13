@@ -52,6 +52,22 @@ namespace EstoqueAPI.Controller
             }
 
             return Ok(produto);
-        }       
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletarProduto(Guid id)
+        {
+            var produto = await _db.Estoque.FindAsync(id);
+            
+            if(produto == null)
+            {
+                return NotFound(new {message = "Produto não encontrado"});
+            }
+
+            _db.Estoque.Remove(produto);
+            await _db.SaveChangesAsync();
+
+            return Ok(new {message = "Produto removido do estoque"});
+        }
     }
 }
