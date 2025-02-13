@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EstoqueAPI.Data;
 using EstoqueAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EstoqueAPI.Controller
 {
@@ -33,6 +34,24 @@ namespace EstoqueAPI.Controller
             return CreatedAtAction(nameof(AdicionarProduto), new { id = produto.Id }, produto);
         }
 
-        
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProdutoModel>>> ListarProdutos()
+        {
+            var produtos = await _db.Estoque.ToListAsync();
+            return Ok(produtos);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> LocalizarProduto(Guid id)
+        {
+            var produto = await _db.Estoque.FindAsync(id);
+
+            if(produto == null)
+            {
+                return NotFound(new {message = "Produto não encontrado"});
+            }
+
+            return Ok(produto);
+        }       
     }
 }
