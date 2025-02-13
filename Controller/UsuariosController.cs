@@ -74,5 +74,25 @@ namespace EstoqueAPI.Controller
             }
             return Ok(usuario);
         }
+
+        [HttpPut("{cpf}")]
+        public async Task<IActionResult> AtualizarUsuario(string cpf, [FromBody] UsuarioModel usuarioAtualizado)
+        {
+            var usuarioExistente = await _db.Usuarios.FirstOrDefaultAsync(u => u.CPF == cpf);
+
+            if (usuarioExistente == null)
+            {
+                return NotFound(new { mensagem = "Usuário não encontrado." });
+            }
+            
+            
+            usuarioExistente.Nome = usuarioAtualizado.Nome;
+            usuarioExistente.NivelAcesso = usuarioAtualizado.NivelAcesso;
+
+            _db.Usuarios.Update(usuarioExistente);
+            await _db.SaveChangesAsync();
+
+            return Ok(usuarioExistente);
+        }
     }
 }
